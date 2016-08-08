@@ -271,6 +271,8 @@ printf("calling init\n");
     init(global_eid, bytes, len, offset);
 printf("calling hello\n");
     hello(global_eid); 
+printf("calling printSecret\n");
+    printSecret(global_eid); 
     /* Utilize edger8r attributes */
     /*edger8r_array_attributes();
     edger8r_pointer_attributes();

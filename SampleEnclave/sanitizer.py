@@ -43,6 +43,7 @@ if __name__ == '__main__':
       funcs = []
       userfuncs = []
       text = ''
+      initstart = 0
       textstart = 0
       textend = 0
       textind = 0
@@ -69,6 +70,8 @@ if __name__ == '__main__':
       for func in funcs:
         if not func['name'] in whitelist:
           userfuncs.append(func)
+        if func['name'] == 'init':
+          initstart = func['start']
       raw_so = b''
       with open(fname,'rb') as f:
         raw_so = f.read()
@@ -81,7 +84,7 @@ if __name__ == '__main__':
       with open(fname[:-3] + '.secret.dat', 'wb') as f:
         f.write(text.data())
       with open(fname[:-3] + '.secret.meta', 'wb') as f:
-        f.write(str(text.header['sh_offset']))
+        f.write(str(initstart-text.header['sh_offset']))
       with open(fname[:-3] + '.so', 'wb') as f:
         f.write(raw_so)
       #print funcs

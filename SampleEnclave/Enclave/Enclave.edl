@@ -55,6 +55,7 @@ enclave {
         //public void init([in, size=len] void *bytes, size_t len, intptr_t offset);
         public void init([user_check] void *bytes, size_t len, size_t offset);
         public void hello();
+        public void printSecret();
     };
 
     /* 

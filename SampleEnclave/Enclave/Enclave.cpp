@@ -56,9 +56,10 @@ void hello(){
 	printf("Hello World!\n");
 }
 
-void reallyANNOYING(){
-	printf("NO NO NO NO NO NO\n");
-	printf("NO NO NO NO NO NO\n");
+int secret = 7;
+
+void printSecret(){
+	printf("Secret is %d\n", secret);
 }
 
 
