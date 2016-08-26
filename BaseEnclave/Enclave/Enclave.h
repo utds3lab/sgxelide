@@ -41,6 +41,7 @@ extern "C" {
 #endif
 
 void printf(const char *fmt, ...);
+int elide_restore();
 
 #if defined(__cplusplus)
 }

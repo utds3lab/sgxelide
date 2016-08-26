@@ -36,7 +36,11 @@ enclave {
     include "user_types.h" /* buffer_t */
 
     trusted {
-        public void init([in, size=len] void *bytes, size_t len, intptr_t offset);
+        public int elide_restore();
     };
 
+    untrusted {
+        //void ocall_print_string([in, string] const char *str);
+        void elide_read_file([in, string] const char *secret_file, [out, size=len] uint8_t* buf, size_t len);
+    };
 };

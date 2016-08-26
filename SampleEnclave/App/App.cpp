@@ -267,8 +267,12 @@ int SGX_CDECL main(int argc, char *argv[])
 printf("LEN: %d\n", len);
     size_t offset = read_init_offset("enclave.secret.meta");
 printf("OFFSET: %d\n", offset);
-printf("calling init\n");
-    init(global_eid, bytes, len, offset);
+printf("Calling elide_restore\n");
+int res;
+elide_restore(global_eid, &res);
+printf("Error code %d\n", res);
+//printf("calling init\n");
+    //init(global_eid, bytes, len, offset);
 printf("calling hello\n");
     hello(global_eid); 
 printf("calling printSecret\n");

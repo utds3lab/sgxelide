@@ -227,6 +227,14 @@ void ocall_print_string(const char *str)
     printf("%s", str);
 }
 
+void elide_read_file(const char* secret_name, uint8_t* buf, size_t len){
+printf("Reading file %s\n", secret_name);
+    FILE *f = fopen(secret_name, "rb");
+    
+    fread(buf, len, 1, f);
+    fclose(f);
+}
+
 
 /* Application entry */
 int SGX_CDECL main(int argc, char *argv[])
@@ -242,6 +250,11 @@ int SGX_CDECL main(int argc, char *argv[])
         getchar();
         return -1; 
     }
+
+    int retval;
+    elide_restore(global_eid, &retval);
+
+    printf("Return value is: %d\n", retval);
 
     /* Destroy the enclave */
     sgx_destroy_enclave(global_eid);
