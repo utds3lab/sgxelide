@@ -19,8 +19,11 @@ extern "C" {
 
 void init(void* bytes, size_t len, size_t offset);
 void hello();
+void printSecret();
+int elide_restore();
 
 sgx_status_t SGX_CDECL ocall_print_string(const char* str);
+sgx_status_t SGX_CDECL elide_read_file(const char* secret_file, uint8_t* buf, size_t len);
 
 #ifdef __cplusplus
 }

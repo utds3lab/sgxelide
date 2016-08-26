@@ -17,8 +17,9 @@ extern "C" {
 #endif
 
 
-void init(void* bytes, size_t len, intptr_t offset);
+int elide_restore();
 
+sgx_status_t SGX_CDECL elide_read_file(const char* secret_file, uint8_t* buf, size_t len);
 
 #ifdef __cplusplus
 }

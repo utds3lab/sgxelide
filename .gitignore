@@ -1,0 +1,10 @@
+app
+*.so
+*.o
+*~
+enclave_t.c
+enclave_t.h
+enclave_u.c
+enclave_u.h
+peda-session-app.txt
+.gdb_history

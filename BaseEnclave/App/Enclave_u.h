@@ -17,8 +17,9 @@
 extern "C" {
 #endif
 
+void SGX_UBRIDGE(SGX_NOCONVENTION, elide_read_file, (const char* secret_file, uint8_t* buf, size_t len));
 
-sgx_status_t init(sgx_enclave_id_t eid, void* bytes, size_t len, intptr_t offset);
+sgx_status_t elide_restore(sgx_enclave_id_t eid, int* retval);
 
 #ifdef __cplusplus
 }
