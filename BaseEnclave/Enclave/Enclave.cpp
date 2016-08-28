@@ -39,7 +39,7 @@
 #include "sgx_tcrypto.h"
 
 #include <string.h>
-/*
+
 #define REQUEST_META 0
 #define REQUEST_DATA 1
 
@@ -63,7 +63,7 @@ void printhex(uint8_t* buf, size_t len){
 	}
 	printf("\n");
 }
-
+/*
 char elide_secret_file[] = "enclave.secret.dat";
 
 typedef struct {

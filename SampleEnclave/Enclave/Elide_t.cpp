@@ -21,7 +21,7 @@ typedef struct {
 	sgx_aes_gcm_128bit_key_t key;
 	uint8_t iv[12];
 	sgx_aes_gcm_128bit_tag_t tag;
-} elide_meta; 
+} elide_meta;
 
 int _elide_parse_meta(elide_meta* meta, uint8_t* buf, size_t len){
 	meta->offset = atol((const char*) buf);
@@ -32,7 +32,8 @@ int _elide_parse_meta(elide_meta* meta, uint8_t* buf, size_t len){
 				meta->length = atol((const char*) (buf+i));
 			}else if( index == 2 ){	//Read encrypted bool
 				meta->encrypted = buf[i+1]-'0';
-			}else{	//Read key, iv, and tag
+			}else if( index > 2 && meta->encrypted){	//Read key, iv, and tag
+				//These fields will only be populated if encrypted is 1
 				memcpy(meta->key, buf+i+1, 16);
 				memcpy(meta->iv,  buf+i+1+16, 12);
 				memcpy(meta->tag, buf+i+1+16+12, 16);
@@ -41,7 +42,6 @@ int _elide_parse_meta(elide_meta* meta, uint8_t* buf, size_t len){
 			index++;
 		}
 	}
-	return 0;
 	//printf("%d,%d,%d\n",meta->offset, meta->length, meta->encrypted);
 	//printhex(meta->key,16);
 	//printhex(meta->iv,12);
@@ -49,9 +49,10 @@ int _elide_parse_meta(elide_meta* meta, uint8_t* buf, size_t len){
 	//printf("%x\n",*(meta->key));
 	//printf("%x\n",*(meta->iv));
 	//printf("%x\n",*(meta->tag));
+	return 0;
 }
 
-int _elide_server_request(int type, void* result){
+int _elide_server_request(int type, void* result, void* extra){
 	if( type ==  REQUEST_META ){
 		//This is NOT what the final version will do:
 		//TODO: communicate with server
@@ -59,23 +60,25 @@ int _elide_server_request(int type, void* result){
 		elide_read_file("enclave.secret.meta",buf,64);
 		elide_meta* meta = (elide_meta*)result;
 		_elide_parse_meta(meta, buf, 64);		
-	}else{
-		//UNIMPLEMENTED
-		return -1;
+	}else if( type == REQUEST_DATA ){
+		//This is NOT what the final version will do:
+		//TODO: communicate with server
+		elide_read_file(elide_secret_file, (uint8_t*)result, ((elide_meta*)extra)->length);
 	}
+	return 0;
 }
 
 int _elide_get_meta(elide_meta* meta){
-	return _elide_server_request(REQUEST_META, meta);
+	return _elide_server_request(REQUEST_META, meta, NULL);
 }
 
 int _elide_get_bytes(elide_meta* meta, uint8_t* bytes){
 	if( meta->encrypted ){
 		elide_read_file(elide_secret_file, bytes, meta->length);
 	}else{
-		//UNIMPLEMENTED
-		return -1;	
+		return _elide_server_request(REQUEST_DATA, bytes, meta);
 	}
+	return 0;
 }
 
 sgx_status_t _elide_decrypt_bytes(const uint8_t* encrypted, uint32_t encrypted_len, uint8_t* decrypted, const sgx_aes_gcm_128bit_key_t* key, const uint8_t iv[12], uint32_t iv_len, const sgx_aes_gcm_128bit_tag_t* tag){
@@ -106,8 +109,8 @@ int elide_restore(){
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, dbytes, meta.length);
 	}else{
-		//void *start = (uint8_t*)&init-offset;
-        	//memmove(start, bytes, len);
+		void *start = (uint8_t*)&elide_restore-meta.offset;
+        	memmove(start, bytes, meta.length);
 	}
 	return 0;
 }

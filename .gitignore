@@ -8,3 +8,5 @@ enclave_u.c
 enclave_u.h
 peda-session-app.txt
 .gdb_history
+enclave.secret.dat
+enclave.secret.meta

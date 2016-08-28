@@ -41,6 +41,7 @@ extern "C" {
 #endif
 
 void printf(const char *fmt, ...);
+void printhex(unsigned char* buf, unsigned long len);
 int elide_restore();
 
 #if defined(__cplusplus)
