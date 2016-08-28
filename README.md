@@ -27,12 +27,40 @@ It should be simple to add the elide library to a project.  The following change
 
 ## Using SGX Elide in a project
 
-Once the library has been added, it is very straightforward to use.  All that needs to be done is to call `elide_restore` before calling any other enclave functions.
+Once the library has been added, it is very straightforward to use.  All that needs to be done on the client side is to call `elide_restore` before calling any other enclave functions.
+
+An authentication server must also be set up so that the client can request and retrieve secrets from it, such as the secret code or the decryption key if the code is stored locally but encrypted.
 
 ### Encrypting the secret data
 
 If the `-c` flag is passed to `sanitizer.py`, it will encrypt `enclave.secret.dat`.  Currently, every time the project is compiled, a new random encryption key is generated, so there will be new metadata after every compilation in `enclave.secret.meta`.  This new metadata file should be given to the authentication server so that it can provide the correct decryption key to the enclave.
 
-If the secret data is encrypted, the enclave will likely need to retrieve the contents of `enclave.secret.dat` from disk.  Therefore, in such a case this encrypted file should be included in the same directory as the binary.  The library must be changed to 
+If the secret data is encrypted, the enclave will likely need to retrieve the contents of `enclave.secret.dat` from disk.  Therefore, in such a case this encrypted file should be included in the same directory as the binary.  For now, the file path must be modified in the library if it is necessary to store the data file in a different location than the binary. 
 
 If the secret data is *not* encrypted, then it is important that `enclave.secret.dat` is not kept with the binary.  In such a case, the file should be available only to the authentication server that provides the metadata.
+
+### How SGX Elide works
+
+The process of building and using SGX Elide follows these broad steps:
+
+1. The enclave is compiled into an .so containing the SGX Elide libraries.
+2. The sanitizer script is run on the unsigned enclave.so.
+  1. All functions not on its whitelist are redacted.  All such functions have their contents replaced with `0`.
+  2. The original text section's contents are written to `enclave.secret.dat`.  If the `-c` flag was passed, they are encrypted first.
+  3. Metadata is written to `enclave.secret.meta`.  This includes the size of the code and whether it was encrypted.  If it was encrypted, the file also includes the decryption key, initialization vector, and tag/MAC.
+  4. The enclave is modified to support self-modification (i.e. the text section is set to be both writable and executable).
+3. The enclave is signed by the developer.
+4. The developer sets up an authentication server.
+5. The developer distributes the binary to customers.  If `enclave.secret.dat` is encrypted, it should be included with the binary.  The `enclave.secret.meta` file is never distributed with the binary.
+6. The customer runs the application on an SGX-enabled machine.
+7. The enclave is initialized.
+8. The application calls `elide_restore`.
+  1. Elide initiates a secure connection to the authentication server.
+  2. The enclave performs remote attestation to the server to prove it is authentic and can be trusted.
+  3. Elide requests the data from the `enclave.secret.meta` file.
+    1. If the metadata indicates that `enclave.secret.dat` is encrypted, then the application knows to read it off the local disk.
+    2. If the metadata indicates that `enclave.secret.dat` is not encrypted, then the application requests its contents from the server over the secure connection.
+  4. Elide retrieves the contents of `enclave.secret.dat`.  If it is encrypted, it uses the decryption key/iv/tag from `enclave.secret.meta` to decrypt it.
+  5. Elide copies the original text section's contents over its own code space.  All non-redacted functions have identical bytes copied into them (and therefore suffer no ill effects), and redacted functions are restored.
+9. The application calls any ecalls it needs; all previously redacted functions are now unencrypted but still secure, as their code never leaves the enclave.
+10. Enclave and program execution can continue as normal.
