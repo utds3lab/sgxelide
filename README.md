@@ -23,6 +23,9 @@ It should be simple to add the elide library to a project.  The following change
 * Copy `Elide_u.cpp` into the App directory
 * Add `Enclave/Elide_t.cpp` to the `Enclave_Cpp_Files` variable in the makefile
 * Add `App/Elide_u.cpp` to the `App_Cpp_Files` variable in the makefile
+* Add `public int elide_restore();` to the trusted section in `Enclave.edl`. 
+* Add `void elide_read_file([in, string] const char *secret_file, [out, size=len] uint8_t* buf, size_t len);` to the untrusted section in `Enclave.edl`.
+* Add `void elide_server_request([in, string] const char *secret_request, [out, size=len] uint8_t* buf, size_t len);` to the untrusted section in `Enclave.edl`.
 * Add a call to `elide_restore` before any other enclave calls.
 
 ## Using SGX Elide in a project
