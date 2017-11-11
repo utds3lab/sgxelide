@@ -1,5 +1,6 @@
 from elftools.elf.elffile import ELFFile
 import sys
+import json
 
 if __name__ == '__main__':
   if len(sys.argv) == 2:
@@ -12,7 +13,8 @@ if __name__ == '__main__':
           for sym in sec.iter_symbols():
             if sym.entry['st_info']['type'] == 'STT_FUNC':
               funcs.append(sym.name) 
-      print funcs
+      with open('whitelist.json','w') as outf:
+        json.dump(funcs,outf)
   else:
     print 'supply a filename'
     
