@@ -242,10 +242,11 @@ int SGX_CDECL main(int argc, char *argv[])
         return -1; 
     }
 
-    int retval;
+    printf("This application does not need to be run.\nIt is only used for generating the function whitelist.\n");
+    /*int retval;
     elide_restore(global_eid, &retval);
 
-    printf("Return value is: %d\n", retval);
+    printf("Return value is: %d\n", retval);*/
 
     /* Destroy the enclave */
     sgx_destroy_enclave(global_eid);
