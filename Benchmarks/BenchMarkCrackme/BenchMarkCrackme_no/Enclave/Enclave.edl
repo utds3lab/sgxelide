@@ -1,0 +1,25 @@
+/* Enclave.edl - Top EDL file. */
+
+enclave {
+    
+    include "user_types.h" /* buffer_t */
+    include "sgx_tcrypto.h"
+
+    trusted {
+   	
+	public int crackme();
+	public void nope();
+	public void good();
+    };
+
+   
+    untrusted {
+	int ocall_scanf_string([in, string] const char *format,[in, out, size=1,count=24] char *str);
+	void ocall_puts_string([in, string] const char *str);
+	void ocall_fflush_string();
+        void ocall_print_string([in, string] const char *str);
+	void ocall_exit(int a);
+    	
+    };
+
+};

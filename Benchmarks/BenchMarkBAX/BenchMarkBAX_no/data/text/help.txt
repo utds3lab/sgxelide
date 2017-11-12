@@ -1,0 +1,109 @@
+=========================
+BINIAX 2
+=========================
+a game by Jordan Tuzsuzov
+
+www.biniax.com
+--------------
+
+a minute to learn - hours to play
+
+Biniax-2 is a game of logic and reaction. The 3
+game modes allow you to play against the time,
+pure tactical play or challenge with a friend
+in a multiplayer game.
+Biniax series are also child-friendly games
+no kills, no violence, no weapons.
+
+=======================
+ :NAVIGATING THE MENU:
+=======================
+Use arrow keys to navigate in the menu. when you
+want to select an option press "enter" key.
+You can use touch-screen to select option from
+the menu with double click.
+
+=======================
+ :NAVIGATING THE GAME:
+=======================
+== SINGLEPLAYER MODES ==
+Inside the game, use arrow keys to move the pla-
+yer, "space" key (or tap the broom, when touch-
+screen is enabled) to clear the whole column, and
+"escape" key to enter the main menu.
+Using touch-screen you can also navigate your
+block, pointing the direction to move.
+
+== MULTIPLAYER MODE ==
+Use arrow keys to navigate player-1 and 
+"W", "A", "S", "D" for player-2. 
+Enter the menu with "escape" and restart the
+party with "enter" or "space" keys.
+No touch-screen control is enabled in multi.
+
+==============
+ :GAME RULES:
+==============
+Biniax-2 implements mainly the rules of the ori-
+ginal Biniax game :
+The player moves a single element around a field
+of pairs of elements. You can take a pair if it 
+contains your element. When a pair is taken, pla-
+yer's element becomes the other element of the
+taken pair. Sometimes the field is scrolling down
+(the scrolling elements can push you down)
+and the goal of the game is to stay as long as
+possible on the board.
+
+==============
+ :GAME MODES:
+==============
+== ARCADE GAME ==
+In the arcade-logic mode, the scrolling happens
+in a time period, which decreases with the game
+progress. It is almost the original Biniax 
+gameplay, but introduces also obstacles and
+column clearing. The available clearings are
+shown at the right side of the screen.
+
+== TACTIC GAME ==
+When you play tactic game, the time has no
+effect. The field goes down after you spend your
+moves (move counter is situated at the right 
+side of the gaming field). The allowed moves de-
+pend the field situation (when there are obsta-
+cles, the allowed moves are more). The available
+clearings are shown at the right-bottom side of
+the screen.
+
+== MULTIPLAYER ==
+In multiplayer mode you can challenge your fri-
+ends in an arcade-logic game. The winner is the
+player, who remains longer in the field.
+
+== CONTINUE LAST GAME ==
+When the player exits a singleplayer game, it
+is automatically saved. Using the continue
+menu option, you can resume your last game.
+
+== C R E D I T S ==
+
+:GAME DESIGN:
+Jordan Tuzsuzov
+:PROGRAMMING:
+Jordan Tuzsuzov
+:GRAPHICAL ART:
+Kiril Vurbanov
+:MUSIC:
+Jordan Tuzsuzov
+
+Version 1.30
+May 2009
+
+Biniax-2 is Copyright (C) 2007 - Jordan Tuzsuzov
+Biniax is Copyright (C) 2005 - Jordan Tuzsuzov
+
+
+All about Biniax, BiniaxMobile and Biniax-2
+www.biniax.com
+--------------

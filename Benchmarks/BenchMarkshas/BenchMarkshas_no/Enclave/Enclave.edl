@@ -1,0 +1,62 @@
+/* Enclave.edl - Top EDL file. */
+
+enclave {
+    
+    include "user_types.h" /* buffer_t */
+    include "sgx_tcrypto.h"
+    include "sha.h"
+    include "sha-private.h"
+    
+    trusted {
+        
+ 
+        
+
+        public int SHA1Reset([user_check] SHA1Context *context);
+	public int SHA224Reset([user_check] SHA224Context *context);
+	public int SHA256Reset([user_check] SHA256Context *context);
+	public int SHA384Reset([user_check] SHA384Context *context);
+
+	public int SHA512Reset([user_check] SHA512Context *context);
+
+	public int hmacReset([user_check] HMACContext *ctx, enum SHAversion whichSha,
+	    [in, count=key_len]const unsigned char *key, int key_len);
+
+	public int hmacInput([user_check] HMACContext *ctx, [in,count=text_len]const unsigned char *text,
+	    int text_len);
+
+	public int hmacFinalBits([user_check] HMACContext *ctx, uint8_t bits, unsigned int bitcount);
+
+	public int hmacResult([user_check] HMACContext *ctx, [user_check] uint8_t *digest);
+	public int USHAReset([user_check] USHAContext *ctx, enum SHAversion whichSha);
+	public int USHAInput([user_check] USHAContext *ctx, [in, count=bytecount] const uint8_t *bytes, unsigned int bytecount);
+	public int USHAFinalBits([user_check] USHAContext *ctx, uint8_t bits, unsigned int bitcount);
+	public int USHAResult([user_check] USHAContext *ctx, [user_check] uint8_t Message_Digest[64]);
+
+
+	/*public int SHA1Reset([user_check] SHA1Context *context);
+	public int SHA1Result([user_check] SHA1Context *context,
+               [user_check] uint8_t Message_Digest[20]);
+	public int SHA1Input(    [user_check] SHA1Context    *context,
+                  [in, count=length] const uint8_t  *message_array,
+                  unsigned       length);*/
+    };
+
+    /* Import ECALL/OCALL from sub-directory EDLs.
+     *  [from]: specifies the location of EDL file. 
+     *  [import]: specifies the functions to import, 
+     *  [*]: implies to import all functions.
+     */
+    
+
+    /* 
+     * ocall_print_string - invokes OCALL to display string buffer inside the enclave.
+     *  [in]: copy the string buffer to App outside.
+     *  [string]: specifies 'str' is a NULL terminated buffer.
+     */
+    untrusted {
+        void ocall_print_string([in, string] const char *str);
+       
+    };
+
+};

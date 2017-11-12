@@ -1,0 +1,23 @@
+enclave {
+    trusted {
+        /* define ECALLs here. */
+		
+		public void init_store();
+		public void free_store();
+		public void add_to_store([in,size=len]const void *bytes, size_t len);
+		public void get_from_store([out,size=len]void *out_var, size_t len, size_t index);
+		public void encrypt_store([in,string]const char *fname);
+		public void decrypt_store([in,size=len]const uint8_t *ebytes, size_t len);
+		public void store_to_bytes();
+    
+    };
+
+    untrusted {
+        /* define OCALLs here. */
+		void ocall_write_resource([in,string] const char *str, [in,size=len] const void *bytes, size_t len);
+		void ocall_write_out([in,size=len] const void *bytes, size_t len);
+		void ocall_print_raw([in, size=len] const void *bytes, size_t len);
+		void ocall_print_string([in, string] const char *str);
+                
+        };
+};

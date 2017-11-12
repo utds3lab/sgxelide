@@ -1,0 +1,35 @@
+/* Enclave.edl - Top EDL file. */
+
+enclave {
+    
+    include "user_types.h" /* buffer_t */
+    include "sgx_tcrypto.h"
+    include "des.h"
+    
+    trusted {
+        
+      
+        
+	public void generate_key([in,string] unsigned char* key);
+	public void generate_sub_keys([in,string] unsigned char* main_key, [user_check] key_set* key_sets);
+	public void process_message([in,string] unsigned char* message_piece, [user_check] unsigned char* processed_piece, [user_check] key_set* key_sets, int mode);
+    };
+
+    /* Import ECALL/OCALL from sub-directory EDLs.
+     *  [from]: specifies the location of EDL file. 
+     *  [import]: specifies the functions to import, 
+     *  [*]: implies to import all functions.
+     */
+    
+
+    /* 
+     * ocall_print_string - invokes OCALL to display string buffer inside the enclave.
+     *  [in]: copy the string buffer to App outside.
+     *  [string]: specifies 'str' is a NULL terminated buffer.
+     */
+    untrusted {
+        void ocall_print_string([in, string] const char *str);
+        
+    };
+
+};
