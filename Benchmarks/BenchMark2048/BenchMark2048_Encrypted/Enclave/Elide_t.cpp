@@ -98,19 +98,14 @@ int _elide_server_request(int type, void* result, void* extra){
 		}
 		//printf("\n");
 		//printf("First byte of tag: %x\n", *tag);
-printf("buffer_data address: %lx\n",&buffer_data);
-printf("extra len: %d\n",((elide_meta*)extra)->length);
-printf("buf_data address/length: %lx/%d\n",&buf_data,length);
 		memcpy(buf_data, buffer_data+20, length);
 		//printf("length is %u\n", length);
 		//printf("tag is %x\n", tag);
 		//printf("ct is %x\n", buf_data);
-printf("got here\n");
 		if( sgx_ecode = sgx_rijndael128GCM_decrypt(key,(const uint8_t* )buf_data,length,(uint8_t*)result,iv,12,NULL,0,(const sgx_aes_gcm_128bit_tag_t*)tag) ){
 		printf("RECEIVING ERROR CODE: %d\n", sgx_ecode);
 		return sgx_ecode;
 	}
-printf("got after\n");
 		//elide_read_file(elide_secret_file, (uint8_t*)result, ((elide_meta*)extra)->length);
 	}
 	return 0;
@@ -124,7 +119,6 @@ int _elide_get_bytes(elide_meta* meta, uint8_t* bytes){
 	if( meta->encrypted ){
 		elide_read_file(elide_secret_file, bytes, meta->length);
 	}else{
-printf("About to request bytes from server\n");
 		return _elide_server_request(REQUEST_DATA, bytes, meta);
 	}
 	return 0;
@@ -162,9 +156,6 @@ int elide_restore(){
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, dbytes, meta.length);
 	}else{
-		printf("0 Start, length %lx, %d\n", (uint8_t*)&elide_restore-meta.offset, meta.length);
-printf("mem allocated to here %lx\n",bytes);
-printf("This is awful: %lx \n %lx",bytes, (uint8_t*)&elide_restore-meta.offset);
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, bytes, meta.length);
 	}

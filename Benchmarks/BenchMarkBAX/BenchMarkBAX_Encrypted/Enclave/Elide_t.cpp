@@ -104,12 +104,6 @@ int _elide_server_request(int type, void* result, void* extra){
 		//printf("ct is %x\n", buf_data);
 		if( sgx_ecode = sgx_rijndael128GCM_decrypt(key,(const uint8_t* )buf_data,length,(uint8_t*)result,iv,12,NULL,0,(const sgx_aes_gcm_128bit_tag_t*)tag) ){
 		printf("ERROR CODE (DATA): %x\n", sgx_ecode);
-		printf("ERROR CODE: %d\n", sgx_ecode);
-		printf("ERROR CODE: %d\n", sgx_ecode);
-		printf("ERROR CODE: %d\n", sgx_ecode);
-		printf("ERROR CODE: %d\n", sgx_ecode);
-		printf("ERROR CODE: %d\n", sgx_ecode);
-		printf("ERROR CODE: %d\n", sgx_ecode);
 		return sgx_ecode;
 	}
 		//elide_read_file(elide_secret_file, (uint8_t*)result, ((elide_meta*)extra)->length);
@@ -136,14 +130,8 @@ sgx_status_t _elide_decrypt_bytes(const uint8_t* encrypted, uint32_t encrypted_l
 		printf("(decrypt) ERROR CODE: %d\n", sgx_ecode);
 		return sgx_ecode;
 	}
-printf("Address of decrypted buffer: %lx\n",decrypted);
         return SGX_SUCCESS;
 }
-
-int dummy = 0;
-int dummy_two = 0;
-void __attribute__ ((noinline)) before_the_copy(){dummy++;}
-void __attribute__ ((noinline)) after_the_copy(){dummy_two++;}
 
 int elide_restore(){
 	//printf("elide_restore\n");
@@ -161,16 +149,11 @@ int elide_restore(){
 	}
 	if( meta.encrypted ){
 		uint8_t* dbytes = (uint8_t*)malloc(meta.length);
-printf("mem allocated to here %lx\n",dbytes);
 		if(sgx_ecode = _elide_decrypt_bytes( bytes, meta.length, dbytes, &(meta.key), (const uint8_t*)&(meta.iv), 12, &(meta.tag) ) ){
 			return sgx_ecode;
 		}
-		printf("0 Start, length %lx, %d\n", (uint8_t*)&elide_restore-meta.offset, meta.length);
 		void *start = (uint8_t*)&elide_restore-meta.offset;
-//before_the_copy();
         	memmove(start, dbytes, meta.length);
-//after_the_copy();
-		printf("1 Start, length %lx, %d\n", start, meta.length);
 	}else{
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, bytes, meta.length);
