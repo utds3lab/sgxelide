@@ -67,6 +67,7 @@ enclave {
     untrusted {
         void ocall_print_string([in, string] const char *str);
         void elide_read_file([in, string] const char *secret_file, [out, size=len] uint8_t* buf, size_t len);
+        void elide_server_request([in, string] const char *secret_request, [out, size=len] uint8_t* buf, size_t len);
     };
 
 };
