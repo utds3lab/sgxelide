@@ -98,15 +98,22 @@ if __name__ == '__main__':
       with open(fname,'rb') as f:
         raw_so = f.read()
       seg_ind = 0
+      segment = None
       for seg in elf.iter_segments():
         if seg.section_in_segment(text):
+          segment = seg
           raw_so = set_segment_writable(raw_so, seg_ind, phdr_offs)
         seg_ind += 1
       raw_so = sanitize_section(raw_so, text, userfuncs)
-      secret_bytes = text.data()
+      # Now encrypt the entire segment instead of just text section so that
+      # we have the correct length of the entire writable/executable region
+      # (Although we still only sanitize the text section)
+      secret_bytes = segment.data()
       print 'Unencrypted length: %d'%len(secret_bytes)
       meta = {}
-      meta['offset'] = initstart-text.header['sh_offset']
+      # If we use the segment, then it starts at an offset of 0, so
+      # the offset only is the offset of elide_restore
+      meta['offset'] = initstart #-text.header['sh_offset']
       if encrypted:
         key = random_bytes(16)
         print 'key: %s'%key
@@ -130,7 +137,7 @@ if __name__ == '__main__':
       with open(fname[:-3] + '.secret.meta', 'wb') as f:
         #json.dump(meta,f)
         f.write('%d\n'%meta['offset'])
-	f.write('%d\n'%len(text.data()) )
+	f.write('%d\n'%len(segment.data()) ) # Encrypting segment, not text section
         if encrypted:
           f.write('1\n')
           f.write(meta['key'])

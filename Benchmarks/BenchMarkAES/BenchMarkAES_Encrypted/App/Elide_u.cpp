@@ -53,17 +53,9 @@ int client(const char *secret_request, uint8_t* buf, size_t len)
   printf("I received: %d\n",amount);
   printf("meta or data received: %u\n",*buf); 
   printf("meta or data received2: %x\n",*buf); 
-  /*if(amount != len)
-  {
-      client(secret_request, buf, len);
-  }
-  else
-  {
-	  return 0;
-  }*/
+  //printf("length: %d\n",len);
   
   return 0;
-
 
 }
 
@@ -81,4 +73,10 @@ void elide_server_request(const char* secret_request, uint8_t* buf, size_t len){
     client(secret_request, buf, len);
 }
 
+#include <sys/mman.h>
+/* This will not provide full protection against attacks, as a malicious OS does not need
+   to obey this request. */
+void elide_disable_writable( uintptr_t address, size_t len ){
+    mprotect( (void*)address, len, PROT_EXEC );
+}
 

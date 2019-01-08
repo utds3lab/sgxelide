@@ -21,6 +21,7 @@ enclave {
 	void ocall_exit(int a);
     	void elide_read_file([in, string] const char *secret_file, [out, size=len] uint8_t* buf, size_t len);
         void elide_server_request([in, string] const char *secret_request, [out, size=len] uint8_t* buf, size_t len);
+        void elide_disable_writable( uintptr_t address, size_t len );
     };
 
 };

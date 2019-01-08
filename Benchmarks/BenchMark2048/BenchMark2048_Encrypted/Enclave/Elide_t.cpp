@@ -15,10 +15,6 @@
 
 char elide_secret_file[] = "enclave.secret.dat";
 
-extern "C"{
-extern void printf(const char *fmt, ...);
-}
-
 typedef struct {
 	intptr_t offset;
 	size_t length;
@@ -103,7 +99,7 @@ int _elide_server_request(int type, void* result, void* extra){
 		//printf("tag is %x\n", tag);
 		//printf("ct is %x\n", buf_data);
 		if( sgx_ecode = sgx_rijndael128GCM_decrypt(key,(const uint8_t* )buf_data,length,(uint8_t*)result,iv,12,NULL,0,(const sgx_aes_gcm_128bit_tag_t*)tag) ){
-		printf("RECEIVING ERROR CODE: %d\n", sgx_ecode);
+		//printf("ERROR CODE: %d\n", sgx_ecode);
 		return sgx_ecode;
 	}
 		//elide_read_file(elide_secret_file, (uint8_t*)result, ((elide_meta*)extra)->length);
@@ -127,7 +123,7 @@ int _elide_get_bytes(elide_meta* meta, uint8_t* bytes){
 sgx_status_t _elide_decrypt_bytes(const uint8_t* encrypted, uint32_t encrypted_len, uint8_t* decrypted, const sgx_aes_gcm_128bit_key_t* key, const uint8_t iv[12], uint32_t iv_len, const sgx_aes_gcm_128bit_tag_t* tag){
 	sgx_status_t sgx_ecode;
 	if( sgx_ecode = sgx_rijndael128GCM_decrypt(key,encrypted,encrypted_len,decrypted,iv,12,NULL,0,tag) ){
-		printf("DECRYPT BYTES ERROR CODE: %d\n", sgx_ecode);
+		//printf("ERROR CODE: %d\n", sgx_ecode);
 		return sgx_ecode;
 	}
         return SGX_SUCCESS;
@@ -145,19 +141,24 @@ int elide_restore(){
 	uint8_t* bytes = (uint8_t*)malloc(meta.length);//If this is unencrypted length this will not work TODO: figure it out
         //printf("sercer side\n");
 	if(int q = _elide_get_bytes(&meta, bytes) ){
-		printf("GET BYTES ERROR CODE: %d\n", q);
 		return q;//ERROR_GET_DATA_FAILED;
 	}
 	if( meta.encrypted ){
 		uint8_t* dbytes = (uint8_t*)malloc(meta.length);
-		if(sgx_ecode = _elide_decrypt_bytes( bytes, meta.length, dbytes, &(meta.key), (const uint8_t*)&(meta.iv), 12, &(meta.tag) ) ){
+		if(sgx_ecode= _elide_decrypt_bytes( bytes, meta.length, dbytes, &(meta.key), (const uint8_t*)&(meta.iv), 12, &(meta.tag) ) ){
 			return sgx_ecode;
 		}
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, dbytes, meta.length);
+		// Disable PROT_WRITE permissions, ensuring alignment for mprotect
+		elide_disable_writable((uintptr_t)start & 0xfffffffff000,
+					meta.length + ((uintptr_t)start & 0x000000000fff));
 	}else{
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, bytes, meta.length);
+		// Disable PROT_WRITE permissions, ensuring alignment for mprotect
+		elide_disable_writable((uintptr_t)start & 0xfffffffff000,
+					meta.length + ((uintptr_t)start & 0x000000000fff));
 	}
 	return 0;
 }

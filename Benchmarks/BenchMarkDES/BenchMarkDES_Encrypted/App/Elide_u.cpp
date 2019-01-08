@@ -73,4 +73,10 @@ void elide_server_request(const char* secret_request, uint8_t* buf, size_t len){
     client(secret_request, buf, len);
 }
 
+#include <sys/mman.h>
+/* This will not provide full protection against attacks, as a malicious OS does not need
+   to obey this request. */
+void elide_disable_writable( uintptr_t address, size_t len ){
+    mprotect( (void*)address, len, PROT_EXEC );
+}
 
