@@ -48,7 +48,6 @@ int client(const char *secret_request, uint8_t* buf, size_t len)
  
   printf("send message: %s\n", buffer);
   
-  printf("Requesting this much: %d\n",len);
   /*receive the data(meta or data)*/
   size_t amount = recv(clientSocket, buf, len, MSG_WAITALL);
   printf("I received: %d\n",amount);
@@ -74,4 +73,10 @@ void elide_server_request(const char* secret_request, uint8_t* buf, size_t len){
     client(secret_request, buf, len);
 }
 
+#include <sys/mman.h>
+/* This will not provide full protection against attacks, as a malicious OS does not need
+   to obey this request. */
+void elide_disable_writable( uintptr_t address, size_t len ){
+    mprotect( (void*)address, len, PROT_EXEC );
+}
 

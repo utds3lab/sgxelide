@@ -150,9 +150,15 @@ int elide_restore(){
 		}
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, dbytes, meta.length);
+		// Disable PROT_WRITE permissions, ensuring alignment for mprotect
+		elide_disable_writable((uintptr_t)start & 0xfffffffff000,
+					meta.length + ((uintptr_t)start & 0x000000000fff));
 	}else{
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, bytes, meta.length);
+		// Disable PROT_WRITE permissions, ensuring alignment for mprotect
+		elide_disable_writable((uintptr_t)start & 0xfffffffff000,
+					meta.length + ((uintptr_t)start & 0x000000000fff));
 	}
 	return 0;
 }

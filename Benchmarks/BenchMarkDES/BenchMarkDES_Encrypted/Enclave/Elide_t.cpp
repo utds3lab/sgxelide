@@ -15,10 +15,6 @@
 
 char elide_secret_file[] = "enclave.secret.dat";
 
-extern "C"{
-extern void printf(const char *fmt, ...);
-}
-
 typedef struct {
 	intptr_t offset;
 	size_t length;
@@ -149,15 +145,20 @@ int elide_restore(){
 	}
 	if( meta.encrypted ){
 		uint8_t* dbytes = (uint8_t*)malloc(meta.length);
-printf("mem allocated to here %lx\n",dbytes);
-		if(sgx_ecode = _elide_decrypt_bytes( bytes, meta.length, dbytes, &(meta.key), (const uint8_t*)&(meta.iv), 12, &(meta.tag) ) ){
+		if(sgx_ecode= _elide_decrypt_bytes( bytes, meta.length, dbytes, &(meta.key), (const uint8_t*)&(meta.iv), 12, &(meta.tag) ) ){
 			return sgx_ecode;
 		}
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, dbytes, meta.length);
+		// Disable PROT_WRITE permissions, ensuring alignment for mprotect
+		elide_disable_writable((uintptr_t)start & 0xfffffffff000,
+					meta.length + ((uintptr_t)start & 0x000000000fff));
 	}else{
 		void *start = (uint8_t*)&elide_restore-meta.offset;
         	memmove(start, bytes, meta.length);
+		// Disable PROT_WRITE permissions, ensuring alignment for mprotect
+		elide_disable_writable((uintptr_t)start & 0xfffffffff000,
+					meta.length + ((uintptr_t)start & 0x000000000fff));
 	}
 	return 0;
 }
